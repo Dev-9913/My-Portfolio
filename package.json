@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "A minimal, pixel-perfect developer portfolio and blog.",
   "homepage": "https://deveshkaushik.vercel.app",
-  "license": "MIT",
+  "private": true,
   "author": {
     "name": "Devesh Kaushik",
     "email": "deveshpt404@gmail.com",

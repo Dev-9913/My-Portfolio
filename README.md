@@ -4,11 +4,7 @@ A minimal, pixel-perfect dev portfolio, blog and products to showcase my work as
 
 Check out the live site: [deveshkaushik](https://deveshkaushik.vercel.app)
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/be67ffb8-2511-4f5c-912e-270266ef928a">
-  <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/609c66b3-4f89-46d5-8de9-0f8bf18529cb">
-  <img src="https://github.com/user-attachments/assets/609c66b3-4f89-46d5-8de9-0f8bf18529cb" alt="Screenshot">
-</picture>
+<img src=".github/images/screenshot.png" alt="Screenshot">
 
 ## Overview
 
@@ -49,12 +45,6 @@ Each entry is well-documented and includes:
 ## Development
 
 Please refer to the [Development Guide](./DEVELOPMENT.md) for more details.
-
-## License
-
-Licensed under the [MIT license](./LICENSE).
-
-You're free to use my code! Just make sure to <ins>remove all my personal information</ins> before publishing your website. It's awesome to see my code being useful to someone!
 
 ## Acknowledgments
 
