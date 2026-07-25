@@ -1,0 +1,30 @@
+---
+title: "Why I Built a Budgeting Tool With No Backend"
+description: "Generating all 13 master budget schedules for manufacturing cost accounting, entirely in the browser."
+category: "engineering"
+icon: "code"
+createdAt: "2026-06-15"
+updatedAt: "2026-06-15"
+---
+
+Most of my projects reach for a database pretty quickly. The [Budget Automation System](https://github.com/Dev-9913/Budgeting_Schedule_Automation) is the exception, and building it that way taught me more about when *not* to add a backend than any backend-heavy project has.
+
+## The problem
+
+Standard cost-accounting methodology for manufacturing companies involves 13 interconnected master budget schedules — sales, production, direct materials, direct labor, overhead, cost of goods sold, and so on — each one feeding numbers into the next. Get one input wrong and the error cascades through every downstream schedule. Doing this by hand in a spreadsheet works, but it's slow and error-prone to recompute when a single assumption changes.
+
+## Why no backend
+
+The data here doesn't need to be shared, doesn't need to persist across devices for most users, and doesn't involve anything sensitive enough to justify storing it server-side. Every schedule is a pure function of the inputs: given sales forecasts, cost assumptions, and a few operating parameters, the other twelve schedules are fully determined. That's a spreadsheet problem, not a database problem — so I treated it like one.
+
+The whole thing runs in Next.js and TypeScript as a client-side computation pipeline. Each schedule is a typed function that takes the previous schedules' outputs as input, so the dependency graph between them is explicit in the type system rather than implicit in a spreadsheet's cell references. Change a sales projection and everything downstream recalculates instantly, with TypeScript catching mismatched shapes at compile time instead of silently propagating a wrong number three schedules later.
+
+## Recharts and CSV export
+
+Once the numbers exist, the more useful problem is making them legible. I used Recharts for the dashboard views — trend lines for revenue and cost projections, breakdowns by cost category — and added CSV export so the output can drop straight into whatever the user is already using downstream (usually Excel, in manufacturing finance).
+
+## The tradeoff
+
+The obvious limitation: nothing persists once you close the tab, and there's no multi-user collaboration. For this specific tool, that's fine — it's meant to be a fast "what-if" calculator, not a system of record. But it's a decision I made deliberately, not by default. If a future version needs shared scenarios or saved history, that's a backend problem worth adding — but only when the use case actually demands it, not because "add a database" is the reflexive first step.
+
+Deployed on Vercel, it's basically free to run — no server costs, since there's no server.

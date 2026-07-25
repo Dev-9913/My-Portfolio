@@ -1,0 +1,32 @@
+---
+title: "Building an AI-Powered E-Book Reader with Expo"
+description: "AI recaps, contextual Q&A, and scene visualization in a React Native EPUB reader — and why one AI model was never enough."
+category: "engineering"
+icon: "code"
+createdAt: "2026-06-22"
+updatedAt: "2026-06-22"
+---
+
+[Folio](https://github.com/Dev-9913/folio-app) started from a simple annoyance: picking a long book back up after a break and not remembering where I left off, plot-wise. That turned into an AI-powered e-book reader built with React Native and Expo, using EPUB.js for rendering and a Node.js/Express backend for the AI features.
+
+## Reading position is harder than it sounds
+
+EPUB.js gives you a reader, but "AI recap of what happened before this point" requires knowing precisely where "this point" is in terms of actual story content, not just a scroll offset. I ended up tracking reading position by chapter and paragraph-level anchors rather than pixel or percentage offsets, so a recap request always has a stable, meaningful boundary to summarize up to — regardless of font size or screen width changes.
+
+## Contextual Q&A without re-sending the whole book
+
+Letting a reader ask "wait, who is this character again?" and get a useful answer means giving the AI model relevant context without shipping the entire book on every request. I built a lightweight retrieval step: chapters read so far are chunked and indexed, and a question pulls in only the passages relevant to it plus a summary of everything before that point. It's a smaller-scale version of retrieval-augmented generation, sized for a single book rather than a whole corpus.
+
+## Multi-model fallbacks, for real this time
+
+This is the project where I learned to stop trusting a single AI provider for anything user-facing. Google's Gemini models are the primary path, backed by Redis for caching repeated requests (a recap of the same chapter shouldn't cost a fresh API call every time). But rate limits and occasional outages are a fact of life, so every AI feature — recaps, Q&A, scene visualization — has an ordered fallback list of models it tries before giving up and surfacing an error to the user.
+
+Scene visualization (generating an image for a particularly vivid passage) is the most failure-prone feature, since image generation has tighter rate limits than text. That one specifically needed backoff-and-retry logic on top of the fallback list, or users would hit failures constantly during any kind of usage spike.
+
+## Auth, payments, and EAS builds
+
+Clerk handles authentication and Razorpay handles payments for premium AI features — both were more about integration discipline than hard engineering: webhook verification, idempotent payment handling, and making sure a failed payment never silently unlocks a feature. On the build side, EAS (Expo Application Services) automates cloud builds for both platforms, which turned "let me just test this on a real device" from a 20-minute local build into a background task.
+
+## What stuck with me
+
+The AI parts of this project were the fun parts to build, but the reliability work — fallbacks, caching, retry logic — is what actually made it usable day to day. It's a pattern I now build into every project that talks to an external AI API: assume the first call will sometimes fail, and design for that from the start rather than bolting it on later.

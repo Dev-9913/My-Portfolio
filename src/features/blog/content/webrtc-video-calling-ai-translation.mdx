@@ -1,0 +1,30 @@
+---
+title: "Adding WebRTC Video Calls and Live AI Translation"
+description: "How I integrated WebRTC screen sharing and Gemini-powered translation modes into a language-learning app."
+category: "engineering"
+icon: "code"
+createdAt: "2026-06-08"
+updatedAt: "2026-06-08"
+---
+
+Language practice apps live or die by how natural the conversation feels. Text chat gets you halfway; for [LingoMate MK2](https://github.com/Dev-9913/lingomateMK2) I wanted actual face-to-face practice, which meant WebRTC video calling — and since the whole point of the app is cross-language conversation, live translation support on top of that.
+
+## WebRTC without a media server
+
+For a project this size, running a full SFU (selective forwarding unit) felt like overkill. Peer-to-peer WebRTC connections, signaled over the existing Socket.IO server, were enough: one peer creates an offer, the signaling server relays it to the other peer via their existing socket room, and ICE candidates are exchanged the same way. No new infrastructure, just new event types on a connection that already existed.
+
+Screen sharing came almost for free once video calling worked — `getDisplayMedia()` instead of `getUserMedia()`, with a track replace on the existing peer connection rather than tearing down and rebuilding it. The main gotcha was handling the moment the user stops sharing from the browser's native "stop sharing" button rather than a button inside the app — that fires a `track.onended` event you have to listen for explicitly, or the UI gets stuck showing a share that's already stopped.
+
+## Where Gemini comes in
+
+Translation happens in two places: async on chat messages, and — the harder problem — live during calls. For messages, it's a straightforward request to Gemini with the source and target language, cached so re-reading a translated message doesn't re-hit the API.
+
+Live translation during a call is a different shape of problem. I didn't try to do real-time speech translation mid-call (that's a genuinely hard, latency-sensitive problem on its own); instead I built "translation modes" — structured prompts and context windows so that when a user requests a translation of what was just said, Gemini has enough conversational context to translate idiomatically rather than word-for-word.
+
+## Multi-model fallbacks matter more than I expected
+
+AI API calls fail more often than typical REST endpoints — rate limits, timeouts, occasional bad responses. For [Folio](https://github.com/Dev-9913/folio-app), my e-book reader project, I ended up building the same lesson in twice: don't call a single model and hope. Falling back through a small ordered list of models when the primary one errors out turns an occasional "translation failed" toast into something that mostly just works, silently, from the user's perspective.
+
+## Takeaway
+
+Real-time media and AI features both fail in the same way if you're not careful: they work great in your first demo and then quietly break in production under real network conditions. Building in fallbacks and graceful degradation from day one is cheaper than retrofitting them after users start complaining.

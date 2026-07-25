@@ -1,0 +1,32 @@
+---
+title: "Building Real-Time Messaging with Socket.IO"
+description: "Notes from building LingoMate's chat system — typing indicators, read receipts, presence tracking, and unread counters."
+category: "engineering"
+icon: "code"
+createdAt: "2026-06-01"
+updatedAt: "2026-06-01"
+---
+
+When I started building [LingoMate MK2](https://github.com/Dev-9913/lingomateMK2), a real-time language-learning platform, the chat system was the part I underestimated the most. "Just send messages over a socket" sounds simple until you need typing indicators, read receipts, presence tracking, and unread counters all staying in sync across multiple open tabs.
+
+## Starting simple
+
+The first version just emitted a `message` event and appended it to state on the other end. That's fine for a demo, but it falls apart the moment you need to know *who's currently typing* or *whether the other person has actually seen your message*.
+
+## Typing indicators without spamming the server
+
+A naive typing indicator fires an event on every keystroke. That's a lot of socket traffic for very little value. I debounced it instead — emit `typing:start` once, then a `typing:stop` after a short pause with no new keystrokes. The receiving client just flips a boolean and clears it on a timeout as a safety net, in case the `stop` event never arrives (dropped connections happen).
+
+## Read receipts and presence
+
+Read receipts turned out to be more of a data-modeling problem than a socket problem. Every message needed a `readBy` list backed by Prisma and PostgreSQL, updated when the recipient's client reports the message as visible (using an intersection observer, not just "the chat window is open"). Presence — who's online right now — is a separate concern: a lightweight `presence` room per user, joined on connect and left on disconnect, broadcasting status changes to friends only, not globally.
+
+## Unread counters that survive reconnects
+
+The trickiest part was making unread counts reliable across reconnects and multiple tabs. Client-side counters drift the moment a socket disconnects and reconnects. I moved the source of truth to the database — every message has a read state, and the badge count is a query, not a running counter kept in memory. The socket layer just tells the client "something changed, go refetch," rather than trying to keep a perfectly synced count purely in real time.
+
+## What I'd do differently
+
+If I rebuilt this today, I'd introduce message queuing earlier (something like a lightweight outbox pattern) so that flaky connections don't lose typing/read events silently. Right now those are best-effort — which is fine for typing indicators, but read receipts deserve more durability.
+
+Real-time features are deceptively simple to demo and deceptively hard to make reliable. Most of the actual engineering isn't the socket connection — it's deciding what state needs to be durable versus ephemeral.
