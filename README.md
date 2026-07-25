@@ -1,8 +1,8 @@
-# [deveshkaushik](https://deveshkaushik.vercel.app)
+# [deveshkaushik](https://my-portfolio-livid-rho-62.vercel.app/)
 
 A minimal, pixel-perfect dev portfolio, blog and products to showcase my work as a Fullstack developer.
 
-Check out the live site: [deveshkaushik](https://deveshkaushik.vercel.app)
+Check out the live site: [deveshkaushik](https://my-portfolio-livid-rho-62.vercel.app/)
 
 <img src=".github/images/screenshot.png" alt="Screenshot">
 
