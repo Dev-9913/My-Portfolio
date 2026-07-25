@@ -1,25 +1,25 @@
 ---
 title: "Building an AI-Powered E-Book Reader with Expo"
-description: "AI recaps, contextual Q&A, and scene visualization in a React Native EPUB reader — and why one AI model was never enough."
+description: "AI chats with your book, scene visualization, and multi-model AI fallbacks in a React Native EPUB reader."
 category: "engineering"
 icon: "code"
 createdAt: "2026-06-22"
 updatedAt: "2026-06-22"
 ---
 
-[Folio](https://github.com/Dev-9913/folio-app) started from a simple annoyance: picking a long book back up after a break and not remembering where I left off, plot-wise. That turned into an AI-powered e-book reader built with React Native and Expo, using EPUB.js for rendering and a Node.js/Express backend for the AI features.
+[Folio](https://github.com/Dev-9913/folio-app) started from a simple idea: what if you could actually talk to the book you're reading — ask it questions, get vivid scenes turned into images — instead of just scrolling through text. That turned into an AI-powered e-book reader built with React Native and Expo, using EPUB.js for rendering and a Node.js/Express backend for the AI features.
 
 ## Reading position is harder than it sounds
 
-EPUB.js gives you a reader, but "AI recap of what happened before this point" requires knowing precisely where "this point" is in terms of actual story content, not just a scroll offset. I ended up tracking reading position by chapter and paragraph-level anchors rather than pixel or percentage offsets, so a recap request always has a stable, meaningful boundary to summarize up to — regardless of font size or screen width changes.
+EPUB.js gives you a reader, but grounding an AI chat in "everything the reader has actually seen so far" requires knowing precisely where "so far" ends in terms of actual story content, not just a scroll offset — otherwise you risk the AI spoiling something the reader hasn't gotten to yet. I ended up tracking reading position by chapter and paragraph-level anchors rather than pixel or percentage offsets, so a chat request always has a stable, meaningful boundary to draw context from — regardless of font size or screen width changes.
 
-## Contextual Q&A without re-sending the whole book
+## Chatting with the book without re-sending the whole thing
 
 Letting a reader ask "wait, who is this character again?" and get a useful answer means giving the AI model relevant context without shipping the entire book on every request. I built a lightweight retrieval step: chapters read so far are chunked and indexed, and a question pulls in only the passages relevant to it plus a summary of everything before that point. It's a smaller-scale version of retrieval-augmented generation, sized for a single book rather than a whole corpus.
 
 ## Multi-model fallbacks, for real this time
 
-This is the project where I learned to stop trusting a single AI provider for anything user-facing. Google's Gemini models are the primary path, backed by Redis for caching repeated requests (a recap of the same chapter shouldn't cost a fresh API call every time). But rate limits and occasional outages are a fact of life, so every AI feature — recaps, Q&A, scene visualization — has an ordered fallback list of models it tries before giving up and surfacing an error to the user.
+This is the project where I learned to stop trusting a single AI provider for anything user-facing. Google's Gemini models are the primary path, backed by Redis for caching repeated requests (a chat answer about the same passage shouldn't cost a fresh API call every time). But rate limits and occasional outages are a fact of life, so every AI feature — chat and scene visualization alike — has an ordered fallback list of models it tries before giving up and surfacing an error to the user.
 
 Scene visualization (generating an image for a particularly vivid passage) is the most failure-prone feature, since image generation has tighter rate limits than text. That one specifically needed backoff-and-retry logic on top of the fallback list, or users would hit failures constantly during any kind of usage spike.
 

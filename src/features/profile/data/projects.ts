@@ -51,7 +51,7 @@ export const PROJECTS: Project[] = [
     ],
     description: `A cross-platform AI-powered e-book reader.
 - Built with React Native (Expo) and EPUB.js, integrating Clerk authentication and Razorpay payments.
-- Developed a Node.js/Express.js backend with Google Gemini, Redis, and PostgreSQL (Prisma) to power AI recaps, contextual Q&A, and scene visualization.
+- Developed a Node.js/Express.js backend with Google Gemini, Redis, and PostgreSQL (Prisma) to power AI chats with the book and AI-generated scene visualizations.
 - Engineered multi-model AI fallbacks, secure EPUB storage, and automated EAS cloud builds for reliable production deployments.`,
     logo: "https://api.dicebear.com/7.x/shapes/svg?seed=Folio+AI+Ebook+Reader",
   },

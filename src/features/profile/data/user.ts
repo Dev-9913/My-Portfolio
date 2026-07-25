@@ -32,7 +32,7 @@ export const USER: User = {
 - **Fullstack developer** and final-year **ECE student at Delhi Technological University**, focused on building real, working products end to end rather than just tutorials.
 - Comfortable across the stack: **React.js**, **Next.js**, **Node.js/Express.js**, **PostgreSQL** with **Prisma**, and **React Native (Expo)** for mobile.
 - Built [LingoMate MK2](https://github.com/Dev-9913/lingomateMK2), a real-time language-learning platform with **Socket.IO** messaging, **WebRTC** video calling, and **Gemini AI**-powered translation.
-- Built [Folio](https://github.com/Dev-9913/folio-app), an AI-powered e-book reader on **React Native/Expo** with AI recaps, contextual Q&A, and Razorpay payments.
+- Built [Folio](https://github.com/Dev-9913/folio-app), an AI-powered e-book reader on **React Native/Expo** with AI chat-with-book, scene image generation, and Razorpay payments.
 - Also works on robotics software as part of **DTU's Autonomous Underwater Vehicle team**, writing **ROS2** modules and behaviour trees for mission planning.
 - **Currently exploring:** system design and applied AI, and always looking for the next hard problem to build through.
 `,

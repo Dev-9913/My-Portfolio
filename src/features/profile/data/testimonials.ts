@@ -28,7 +28,7 @@ export const TESTIMONIALS_1: Testimonial[] = [
     authorBio: "AI-Powered E-Book Reader",
     url: "https://github.com/Dev-9913/folio-app",
     quote:
-      "Cross-platform EPUB reader with AI recaps, contextual Q&A, and multi-model AI fallbacks for reliability.",
+      "Cross-platform EPUB reader with AI chats with your book, AI-generated scene visualizations, and multi-model AI fallbacks for reliability.",
   },
 ];
 
